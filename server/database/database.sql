@@ -1,0 +1,45 @@
+-- Database creation
+CREATE DATABASE IF NOT EXISTS FunPlay;
+USE FunPlay;
+
+-- Users table
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nickname VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    pwd VARCHAR(255) NOT NULL,
+    loginStreak INT DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_guest BOOLEAN DEFAULT FALSE
+);
+
+-- Games table
+CREATE TABLE games (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    gameName VARCHAR(100) NOT NULL,
+    class ENUM('solo', 'multi', 'both') NOT NULL
+);
+
+-- GamePlayed table
+CREATE TABLE gamePlayed (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    game_id INT NOT NULL,
+    idPlayer1 INT NOT NULL,
+    idPlayer2 INT,
+    score INT,
+    played_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    class ENUM('solo', 'multi') NOT NULL,
+    FOREIGN KEY (game_id) REFERENCES games(id),
+    FOREIGN KEY (idPlayer1) REFERENCES users(id),
+    FOREIGN KEY (idPlayer2) REFERENCES users(id)
+);
+
+-- Leaderboard table
+CREATE TABLE leaderboard (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idPlayer INT NOT NULL,
+    game_id INT NOT NULL,
+    score INT NOT NULL,
+    FOREIGN KEY (idPlayer) REFERENCES users(id),
+    FOREIGN KEY (game_id) REFERENCES games(id)
+);
