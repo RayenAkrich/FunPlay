@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { FaRegUserCircle } from "react-icons/fa";
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import styles from './AuthPage.module.css';
@@ -61,7 +62,7 @@ const AuthPage = () => {
       <Header />
       <main className={styles.main}>
         <form className={styles.form} onSubmit={handleSubmit}>
-          <h2>{mode === 'signup' ? 'Créer un compte' : 'Connexion'}</h2>
+          <h2><FaRegUserCircle /> {mode === 'signup' ? 'Créer un compte' : 'Connexion'}</h2>
           {mode === 'signup' && (
             <input type="text" name="name" placeholder="Nom d'utilisateur" value={form.name}
               onChange={handleChange} required autoComplete="username"

@@ -43,8 +43,20 @@ CREATE TABLE leaderboard (
     FOREIGN KEY (game_id) REFERENCES games(id)
 );
 
+-- Rooms table
+CREATE TABLE rooms (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ownerUserID INT NOT NULL,                
+    gameID INT NOT NULL,                    
+    pass VARCHAR(255),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ownerUserID) REFERENCES users(id),
+    FOREIGN KEY (gameID) REFERENCES games(id)
+);
+
 use funplay;
 select * from gameplayed;
 select * from games;
 select * from leaderboard;
 select * from users;
+select * from rooms;

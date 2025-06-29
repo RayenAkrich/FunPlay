@@ -6,7 +6,7 @@ import styles from './HomePage.module.css';
 
 const HomePage = () => {
   return (
-    <div>
+    <div className={styles.homePage}>
       <Header />
       <main>
         <HeroSection />
