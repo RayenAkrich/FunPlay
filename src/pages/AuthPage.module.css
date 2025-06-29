@@ -1,0 +1,107 @@
+.authContainer {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.form {
+  background: rgb(255, 255, 255,0.9);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 16px 0 rgba(26,35,126,0.09);
+  padding: 2.5rem 2rem 2rem 2rem;
+  min-width: 320px;
+  max-width: 350px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  animation: fadeInUp 0.7s cubic-bezier(.4,0,.2,1);
+}
+
+.form h2 {
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.form input {
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid #e0e7ef;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.form input:focus {
+  border: 1.5px solid var(--primary);
+}
+
+.submitBtn {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.8rem 0;
+  border-radius: var(--radius);
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+.submitBtn:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-2px) scale(1.04);
+}
+
+.toggleText {
+  text-align: center;
+  font-size: 0.98rem;
+  color: #444;
+}
+.toggleLink {
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.2rem;
+  transition: color var(--transition);
+}
+.toggleLink:hover {
+  color: var(--accent);
+}
+.guestText {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.97rem;
+  color: #666;
+}
+.guestLink {
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.2rem;
+  transition: color var(--transition);
+}
+.guestLink:hover {
+  color: var(--primary);
+}
+.error {
+  color: #e53935;
+  background: #fff0f0;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.7rem;
+  font-size: 0.97rem;
+  text-align: center;
+}

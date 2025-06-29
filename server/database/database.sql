@@ -9,8 +9,7 @@ CREATE TABLE users (
     email VARCHAR(100) UNIQUE NOT NULL,
     pwd VARCHAR(255) NOT NULL,
     loginStreak INT DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    is_guest BOOLEAN DEFAULT FALSE
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Games table
@@ -43,3 +42,9 @@ CREATE TABLE leaderboard (
     FOREIGN KEY (idPlayer) REFERENCES users(id),
     FOREIGN KEY (game_id) REFERENCES games(id)
 );
+
+use funplay;
+select * from gameplayed;
+select * from games;
+select * from leaderboard;
+select * from users;
