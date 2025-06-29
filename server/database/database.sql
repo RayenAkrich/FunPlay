@@ -50,6 +50,7 @@ CREATE TABLE rooms (
     gameID INT NOT NULL,                    
     pass VARCHAR(255),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    isfull BOOL,
     FOREIGN KEY (ownerUserID) REFERENCES users(id),
     FOREIGN KEY (gameID) REFERENCES games(id)
 );
