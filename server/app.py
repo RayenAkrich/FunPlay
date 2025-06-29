@@ -49,7 +49,24 @@ def login():
     if not user or not check_password_hash(user['pwd'], password):
         return jsonify({'message': 'Email ou mot de passe incorrect'}), 401
     cursor.close()
-    return jsonify({'message': f"Bienvenue {user['nickname']} !", 'user': {'id': user['id'], 'nickname': user['nickname']}}), 200
+    return jsonify({'message': f"Bienvenue {user['nickname']} !", 'user': {'id': user['id'], 'nickname': user['nickname'],'is_guest': False}}), 200
+
+@app.route('/api/guest', methods=['POST'])
+def guest_login():
+    cursor = mysql.connection.cursor()
+    # Find the next available GuestNUMBER
+    i = 1
+    while True:
+        guest_nick = f"Guest{i}"
+        cursor.execute('SELECT id FROM users WHERE nickname=%s', (guest_nick,))
+        if not cursor.fetchone():
+            break
+        i += 1
+    cursor.execute('INSERT INTO users (nickname, email, pwd, is_guest) VALUES (%s, %s, %s, %s)', (guest_nick, f"{guest_nick.lower()}@guest.funplay", '', 1))
+    mysql.connection.commit()
+    user_id = cursor.lastrowid
+    cursor.close()
+    return jsonify({'message': f"Bienvenue {guest_nick} (invité) !", 'user': {'id': user_id, 'nickname': guest_nick, 'is_guest': True}}), 200
 
 @app.errorhandler(Exception)
 def handle_exception(e):

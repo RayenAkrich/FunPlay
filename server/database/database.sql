@@ -10,7 +10,8 @@ CREATE TABLE users (
     pwd VARCHAR(255) NOT NULL,
     loginStreak INT DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    last_login DATETIME DEFAULT CURRENT_TIMESTAMP
+    last_login DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_guest BOOL DEFAULT FALSE
 );
 
 -- Games table

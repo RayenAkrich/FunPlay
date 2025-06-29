@@ -33,8 +33,10 @@ const AuthPage = () => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Erreur inconnue');
-      // TODO: handle login/signup success (redirect, store user, etc.)
-      alert(data.message || 'Succès !');
+      // Store user data (localStorage/sessionStorage or context)
+      localStorage.setItem('user', JSON.stringify(data.user));
+      // Redirect to lobby or main page (to be developed)
+      navigate('/lobby');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -42,9 +44,26 @@ const AuthPage = () => {
     }
   };
 
-  const guestLogin = () => {
-    // TODO: implement guest login logic
-    alert('Connexion en tant qu’invité (à implémenter)');
+  const guestLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/guest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nickname: form.name || '' })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Erreur inconnue');
+      // Store guest user data (localStorage/sessionStorage or context)
+      localStorage.setItem('user', JSON.stringify(data.user));
+      // Redirect to lobby or main page (to be developed)
+      navigate('/lobby');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Sync mode with URL query param
