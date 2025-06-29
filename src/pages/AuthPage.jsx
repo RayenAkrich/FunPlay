@@ -35,7 +35,7 @@ const AuthPage = () => {
       if (!res.ok) throw new Error(data.message || 'Erreur inconnue');
       // Store user data (localStorage/sessionStorage or context)
       localStorage.setItem('user', JSON.stringify(data.user));
-      // Redirect to lobby or main page (to be developed)
+      // Redirect to lobby or main page
       navigate('/lobby');
     } catch (err) {
       setError(err.message);
@@ -57,7 +57,7 @@ const AuthPage = () => {
       if (!res.ok) throw new Error(data.message || 'Erreur inconnue');
       // Store guest user data (localStorage/sessionStorage or context)
       localStorage.setItem('user', JSON.stringify(data.user));
-      // Redirect to lobby or main page (to be developed)
+      // Redirect to lobby or main page
       navigate('/lobby');
     } catch (err) {
       setError(err.message);

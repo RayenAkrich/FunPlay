@@ -68,6 +68,14 @@ def guest_login():
     cursor.close()
     return jsonify({'message': f"Bienvenue {guest_nick} (invité) !", 'user': {'id': user_id, 'nickname': guest_nick, 'is_guest': True}}), 200
 
+@app.route('/api/guest/<int:user_id>', methods=['DELETE'])
+def delete_guest(user_id):
+    cursor = mysql.connection.cursor()
+    cursor.execute('DELETE FROM users WHERE id=%s AND is_guest=1', (user_id,))
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': 'Guest deleted'}), 200
+
 @app.errorhandler(Exception)
 def handle_exception(e):
     print('Exception:', e)
