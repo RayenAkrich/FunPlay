@@ -4,6 +4,7 @@ from flask_socketio import SocketIO
 import MySQLdb.cursors
 from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 CORS(app)
@@ -44,12 +45,37 @@ def login():
     if not email or not password:
         return jsonify({'message': 'Champs manquants'}), 400
     cursor = mysql.connection.cursor()
-    cursor.execute('SELECT id, nickname, pwd FROM users WHERE email=%s', (email,))
+    cursor.execute('SELECT id, nickname, pwd, loginStreak, last_login, is_guest FROM users WHERE email=%s', (email,))
     user = cursor.fetchone()
     if not user or not check_password_hash(user['pwd'], password):
+        cursor.close()
         return jsonify({'message': 'Email ou mot de passe incorrect'}), 401
+    # Login streak logic (only for registered users)
+    loginStreak = user['loginStreak'] or 0
+    last_login = user['last_login']
+    today = datetime.now().date()
+    show_streak = False
+    if not user['is_guest']:
+        if last_login:
+            last_login_date = last_login.date() if isinstance(last_login, datetime) else datetime.strptime(str(last_login), '%Y-%m-%d %H:%M:%S').date()
+            if last_login_date == today - timedelta(days=1):
+                loginStreak += 1
+                show_streak = True
+            elif last_login_date != today:
+                loginStreak = 1
+                show_streak = True
+            # else: already logged in today, don't increment
+        else:
+            loginStreak = 1
+            show_streak = True
+        # Update loginStreak and last_login
+        cursor.execute('UPDATE users SET loginStreak=%s, last_login=NOW() WHERE id=%s', (loginStreak, user['id']))
+        mysql.connection.commit()
     cursor.close()
-    return jsonify({'message': f"Bienvenue {user['nickname']} !", 'user': {'id': user['id'], 'nickname': user['nickname'],'is_guest': False}}), 200
+    msg = None
+    if show_streak:
+        msg = f"Bienvenue {user['nickname']} ! Série de connexions {loginStreak} jours, continuez comme ça !"
+    return jsonify({'message': msg or f"Bienvenue {user['nickname']} !", 'user': {'id': user['id'], 'nickname': user['nickname'], 'loginStreak': loginStreak, 'is_guest': bool(user['is_guest']), 'message': msg}}), 200
 
 @app.route('/api/guest', methods=['POST'])
 def guest_login():
@@ -67,14 +93,6 @@ def guest_login():
     user_id = cursor.lastrowid
     cursor.close()
     return jsonify({'message': f"Bienvenue {guest_nick} (invité) !", 'user': {'id': user_id, 'nickname': guest_nick, 'is_guest': True}}), 200
-
-@app.route('/api/guest/<int:user_id>', methods=['DELETE'])
-def delete_guest(user_id):
-    cursor = mysql.connection.cursor()
-    cursor.execute('DELETE FROM users WHERE id=%s AND is_guest=1', (user_id,))
-    mysql.connection.commit()
-    cursor.close()
-    return jsonify({'message': 'Guest deleted'}), 200
 
 @app.errorhandler(Exception)
 def handle_exception(e):
