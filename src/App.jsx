@@ -8,9 +8,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<LobbyPage />} /> {/* Default route to LobbyPage */}
+        <Route path="/lobby" element={<LobbyPage />} /> {/* Explicit route to LobbyPage (used after auth) */}
+        <Route path="/home" element={<HomePage />} />
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/lobby" element={<LobbyPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -26,7 +26,7 @@ const LobbyPage = () => {
       }
     } else {
       // If not logged in, redirect to home
-      navigate('/');
+      navigate('/home');
     }
   }, [navigate]);
 
