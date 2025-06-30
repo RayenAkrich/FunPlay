@@ -61,5 +61,5 @@ use funplay;
 select * from gameplayed;
 select * from games;
 select * from leaderboard;
-select * from users;
 select * from rooms;
+select * from users;

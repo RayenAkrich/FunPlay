@@ -34,8 +34,17 @@ def signup():
     hashed_pwd = generate_password_hash(password)
     cursor.execute('INSERT INTO users (nickname, email, pwd) VALUES (%s, %s, %s)', (name, email, hashed_pwd))
     mysql.connection.commit()
+    user_id = cursor.lastrowid
     cursor.close()
-    return jsonify({'message': 'Inscription réussie !'}), 201
+    return jsonify({
+        'message': 'Inscription réussie !',
+        'user': {
+            'id': user_id,
+            'nickname': name,
+            'loginStreak': 1,
+            'is_guest': False
+        }
+    }), 201
 
 @app.route('/api/login', methods=['POST'])
 def login():
