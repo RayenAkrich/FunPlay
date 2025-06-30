@@ -18,6 +18,7 @@ const AuthPage = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -90,9 +91,20 @@ const AuthPage = () => {
           <input type="email" name="email" placeholder="Email" value={form.email} 
             onChange={handleChange} required autoComplete="email"
           />
-          <input type="password" name="password" placeholder="Mot de passe" value={form.password}
+          <input type={showPassword ? "text" : "password"} name="password" placeholder="Mot de passe" value={form.password}
             onChange={handleChange} required autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
           />
+          <div className={styles.showPassword}>
+            <label htmlFor="showPassword">
+              {showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+            </label>
+            <input
+              type="checkbox"
+              id="showPassword"
+              checked={showPassword}
+              onChange={() => setShowPassword((v) => !v)}
+            />
+          </div>
           {error && <div className={styles.error}>{error}</div>}
           <button type="submit" className={styles.submitBtn} disabled={loading}>
             {loading ? 'Veuillez patienter...' : mode === 'signup' ? 'S’inscrire' : 'Se connecter'}
