@@ -33,7 +33,7 @@ const Header = ({ user }) => {
         )}
         {!user && (
           <>
-            <a href="/" className={styles.link}>Accueil</a>
+            <a href="/home" className={styles.link}>Accueil</a>
             <a href="/auth?mode=login" className={styles.link}>Connexion</a>
             <a href="/auth?mode=signup" className={styles.link}>Inscription</a>
             <a href="/about" className={styles.link}>À propos</a>
