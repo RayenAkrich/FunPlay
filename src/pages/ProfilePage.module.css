@@ -47,8 +47,7 @@
   width: 100%;
   max-width: 600px;
   min-width: 200px;
-  min-height: 100px;
-  max-height: 200px;
+  height: 100%;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -88,6 +87,7 @@
   font-size: 1.8rem;
   font-weight: 800;
   display: flex;
+  margin-bottom: 1rem;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;

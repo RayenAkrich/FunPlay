@@ -54,6 +54,8 @@ const ProfilePage = () => {
             <section className={styles.heroSection}>
             <h1><FaRegUserCircle /> Bienvenue, {user.nickname}!</h1>
             <p>Voici votre profil. Vous pouvez modifier vos informations ci-dessous.</p>
+            <p>Sur FunPlay, personnalisez votre expérience, mettez à jour vos informations et assurez la sécurité de votre compte. N'oubliez pas de choisir un mot de passe fort pour protéger vos parties et vos statistiques !</p>
+            <p>Besoin d'aide ou de support ? Contactez-nous à tout moment via la page d'assistance. Amusez-vous bien sur nos mini-jeux multijoueurs !</p>
             </section>
             <section className={styles.formSection}>
             <form onSubmit={handleSubmit} className={styles.form}>
