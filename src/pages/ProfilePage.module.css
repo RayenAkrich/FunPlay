@@ -1,0 +1,501 @@
+.profilePage {
+  min-height: 100vh;
+  background: var(--gradient-bg);
+  background-image: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.profilePage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(99,102,241,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.profileContainer {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  grid-template-rows: 1fr;
+  gap: 2.5rem;
+  align-items: stretch;
+  justify-content: center;
+  padding: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.heroSection {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  background: rgba(51, 65, 85, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: 2rem ;
+  width: 100%;
+  max-width: 600px;
+  min-width: 200px;
+  min-height: 100px;
+  max-height: 200px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInLeft 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+.heroSection::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  z-index: 1;
+}
+
+.heroSection::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent, rgba(99, 102, 241, 0.05), transparent);
+  animation: float 8s ease-in-out infinite;
+  z-index: 0;
+}
+
+.heroSection > * {
+  position: relative;
+  z-index: 2;
+}
+
+.heroSection h1 {
+  color: var(--text-primary);
+  font-size: 1.8rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  animation: fadeInUp 1.2s ease-out 0.4s both;
+}
+
+.heroSection h1 svg {
+  color: var(--primary);
+  filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.3));
+}
+
+.heroSection p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  animation: fadeInUp 1.4s ease-out 0.6s both;
+}
+
+.formSection {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 500px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  animation: fadeInRight 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+.formSection {
+  width: 100%;
+  max-width: 500px;
+  animation: fadeInUp 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+}
+
+.form {
+  background: rgba(51, 65, 85, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.form::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-secondary);
+  z-index: 1;
+}
+
+.form::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent, rgba(6, 182, 212, 0.05), transparent);
+  animation: float 10s ease-in-out infinite reverse;
+  z-index: 0;
+}
+
+.form > * {
+  position: relative;
+  z-index: 2;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.formGroup label {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius);
+  border: 2px solid rgba(99, 102, 241, 0.2);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(10px);
+  font-size: 1rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.formGroup input::placeholder {
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.formGroup input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.formGroup input:focus::placeholder {
+  color: transparent;
+}
+
+.formGroup input:valid {
+  border-color: var(--secondary);
+}
+
+/* Password toggle buttons */
+.formGroup:has(input[type="password"]),
+.formGroup:has(input[name*="Password"]) {
+  position: relative;
+}
+
+.formGroup button[type="button"] {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+}
+
+.formGroup button[type="button"]:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: var(--primary);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.formGroup button[type="button"]:active {
+  transform: translateY(0);
+}
+
+/* Submit button */
+.form button[type="submit"] {
+  background: var(--gradient-primary);
+  color: var(--text-primary);
+  font-weight: 700;
+  padding: 1.2rem 0;
+  border-radius: var(--radius);
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.form button[type="submit"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.form button[type="submit"]:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+  animation: glow 2s ease-in-out infinite;
+}
+
+.form button[type="submit"]:hover::before {
+  left: 100%;
+}
+
+.form button[type="submit"]:active {
+  transform: translateY(-1px) scale(1.01);
+}
+
+.form button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  animation: none;
+}
+
+.form button[type="submit"]:disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Loading state */
+.form button[type="submit"]:disabled {
+  position: relative;
+  color: var(--text-primary);
+}
+
+.form button[type="submit"]:disabled::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid var(--text-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Error styling */
+.error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius);
+  padding: 1rem;
+  font-size: 0.95rem;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  animation: shake 0.5s ease-in-out, fadeInUp 0.3s ease-out;
+}
+
+/* Animations */
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+  66% {
+    transform: translateY(5px) rotate(-1deg);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .profileContainer {
+    padding: 1.5rem 1rem;
+    gap: 1.5rem;
+  }
+
+  .heroSection {
+    padding: 2rem 1.5rem;
+    max-width: 400px;
+  }
+
+  .heroSection h1 {
+    font-size: 1.6rem;
+  }
+
+  .heroSection p {
+    font-size: 1rem;
+  }
+
+  .formSection {
+    max-width: 400px;
+  }
+
+  .form {
+    padding: 2.5rem 2rem 2rem 2rem;
+    gap: 1.2rem;
+  }
+
+  .formGroup input {
+    padding: 0.9rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .formGroup button[type="button"] {
+    right: 10px;
+    bottom: 10px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .form button[type="submit"] {
+    padding: 1rem 0;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileContainer {
+    padding: 1rem 0.5rem;
+  }
+
+  .heroSection {
+    max-width: 350px;
+    padding: 1.5rem 1rem;
+  }
+
+  .heroSection h1 {
+    font-size: 1.4rem;
+  }
+
+  .formSection {
+    max-width: 350px;
+  }
+
+  .form {
+    padding: 2rem 1.5rem;
+  }
+
+  .formGroup input {
+    padding: 0.8rem 0.9rem;
+  }
+}
+
+/* Focus visible for accessibility */
+.formGroup input:focus-visible,
+.formGroup button:focus-visible,
+.form button[type="submit"]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Enhanced form group animations */
+.formGroup:nth-child(1) {
+  animation: fadeInUp 1.4s ease-out 0.6s both;
+}
+
+.formGroup:nth-child(2) {
+  animation: fadeInUp 1.4s ease-out 0.7s both;
+}
+
+.formGroup:nth-child(3) {
+  animation: fadeInUp 1.4s ease-out 0.8s both;
+}
+
+.formGroup:nth-child(4) {
+  animation: fadeInUp 1.4s ease-out 0.9s both;
+}
+
+/* Hover effects for form groups */
+.formGroup:hover label {
+  color: var(--primary-light);
+  transition: var(--transition);
+}
+
+/* Input validation states */
+.formGroup input:invalid:not(:placeholder-shown) {
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.formGroup input:valid:not(:placeholder-shown) {
+  border-color: rgba(16, 185, 129, 0.5);
+}
