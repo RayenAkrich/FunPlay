@@ -1,5 +1,7 @@
 import styles from './Header.module.css';
 import { useNavigate } from 'react-router-dom';
+import { FaHome , FaRegUser , FaExclamationCircle } from "react-icons/fa";
+import { IoMdStats , IoIosExit } from "react-icons/io";
 
 const Header = ({ user }) => {
   const navigate = useNavigate();
@@ -12,14 +14,14 @@ const Header = ({ user }) => {
       <nav className={styles.nav}>
         {isLogged && (
           <>
-            <a href="/lobby" className={styles.link}>Salles</a>
+            <a href="/lobby" className={styles.link}><FaHome /> Salles</a>
             <div className={styles.profileDropdown}>
               <span className={styles.link}>{user.nickname} ▼</span>
               <div className={styles.dropdownContent}>
-                <a href="/profile" className={styles.link}>Profil</a>
-                <a href="/leaderboard" className={styles.link}>Classement</a>
-                <a href="/about" className={styles.link}>À propos</a>
-                <span className={styles.link} onClick={() => { localStorage.removeItem('user'); navigate('/'); }}>Déconnexion</span>
+                <a href="/profile" className={styles.link}><FaRegUser /> Profil</a>
+                <a href="/leaderboard" className={styles.link}><IoMdStats /> Classement</a>
+                <a href="/about" className={styles.link}><FaExclamationCircle /> À propos</a>
+                <span className={styles.link} onClick={() => { localStorage.removeItem('user'); navigate('/'); }}><IoIosExit /> Déconnexion</span>
               </div>
             </div>
           </>

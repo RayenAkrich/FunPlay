@@ -16,7 +16,7 @@ const ProfilePage = () => {
       navigate('/');
     }
 
-    const [form, setForm] = useState({ name: user?.nickname || '', email: user?.email || '', oldPassword: '', newPassword: '' });
+    const [form, setForm] = useState({ nickname: user?.nickname || '', email: '' || '', oldPassword: '', newPassword: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [showOldPassword, setShowOldPassword] = useState(false);
@@ -32,7 +32,7 @@ const ProfilePage = () => {
       const res = await fetch(`/api/edit-profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify({ ...form, userId: user.id })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Erreur inconnue');
@@ -60,8 +60,8 @@ const ProfilePage = () => {
             <section className={styles.formSection}>
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.formGroup}>
-                <label htmlFor="name">Nom:</label>
-                <input type="text" id="name" name="name" value={form.name} onChange={handleChange} required />
+                <label htmlFor="nickname">Nom:</label>
+                <input type="text" id="nickname" name="nickname" value={form.nickname} onChange={handleChange} required />
                 </div>
                 <div className={styles.formGroup}>
                 <label htmlFor="email">Email:</label>

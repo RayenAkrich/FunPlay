@@ -103,6 +103,44 @@ def guest_login():
     cursor.close()
     return jsonify({'message': f"Bienvenue {guest_nick} (invité) !", 'user': {'id': user_id, 'nickname': guest_nick, 'is_guest': True}}), 200
 
+@app.route('/api/edit-profile', methods=['PUT'])
+def update_profile():
+    data = request.get_json()
+    user_id = data.get('userId')
+    nickname = data.get('nickname')
+    email = data.get('email')
+    old_password = data.get('oldPassword')
+    new_password = data.get('newPassword')
+    # Check if old_password is correct
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT pwd FROM users WHERE id=%s', (user_id,))
+    user = cursor.fetchone()
+    if not user or not check_password_hash(user['pwd'], old_password):
+        cursor.close()
+        return jsonify({'message': 'Ancien mot de passe incorrect'}), 401
+
+    if not user_id or not nickname or not email:
+        return jsonify({'message': 'Champs manquants'}), 400
+
+    if new_password:
+        # Validate and hash new_password
+        new_password = generate_password_hash(new_password)
+
+    cursor = mysql.connection.cursor()
+    cursor.execute('UPDATE users SET nickname=%s, email=%s, pwd=%s WHERE id=%s', (nickname, email, new_password, user_id))
+    mysql.connection.commit()
+    # Fetch updated user info
+    cursor.execute('SELECT id, nickname, email, loginStreak, is_guest FROM users WHERE id=%s', (user_id,))
+    updated_user = cursor.fetchone()
+    cursor.close()
+    return jsonify({'message': 'Profil mis à jour !', 'user': {
+        'id': updated_user['id'],
+        'nickname': updated_user['nickname'],
+        'email': updated_user['email'],
+        'loginStreak': updated_user['loginStreak'],
+        'is_guest': False
+    }}), 200
+
 @app.errorhandler(Exception)
 def handle_exception(e):
     print('Exception:', e)
