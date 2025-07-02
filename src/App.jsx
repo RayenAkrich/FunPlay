@@ -4,6 +4,7 @@ import AuthPage from './pages/AuthPage';
 import LobbyPage from './pages/LobbyPage';
 import AboutPage from './pages/AboutPage';
 import ProfilePage from './pages/ProfilePage';
+import RoomPage from './pages/RoomPage';
 import './App.css'
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/room/:roomId" element={<RoomPage />} />
       </Routes>
     </BrowserRouter>
   );

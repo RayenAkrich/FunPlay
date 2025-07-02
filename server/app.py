@@ -140,6 +140,27 @@ def update_profile():
         'loginStreak': updated_user['loginStreak'],
         'is_guest': False
     }}), 200
+    
+@app.route('/api/create-room', methods=['POST'])
+def create_room():
+    data = request.get_json()
+    owner_id = data.get('ownerId')
+    roomForm= data.get('roomForm')
+    if not roomForm or not owner_id:
+        return jsonify({'message': 'Champs manquants'}), 400
+    # Getting game's id
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT id FROM games WHERE gameName=%s', (roomForm['game'],))
+    game = cursor.fetchone()
+    if not game:
+        cursor.close()
+        return jsonify({'message': 'Jeu introuvable'}), 404
+    cursor.execute('INSERT INTO rooms (ownerUserID, gameID, pass, isfull) VALUES (%s, %s, %s, %s)', (owner_id, game['id'], roomForm['password'], 0))
+    mysql.connection.commit()
+    room_id = cursor.lastrowid
+    cursor.close()
+    return jsonify({'message': 'Salle créée avec succès', 'roomId': room_id}), 201
+
 
 @app.errorhandler(Exception)
 def handle_exception(e):
