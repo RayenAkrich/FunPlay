@@ -1,13 +1,14 @@
 SET GLOBAL event_scheduler = ON;
 
 -- Event to clean database from guests everyday
+drop event cleanup_old_guests;
 CREATE EVENT IF NOT EXISTS cleanup_old_guests
 ON SCHEDULE EVERY 1 DAY
-STARTS CURRENT_DATE + INTERVAL 1 DAY
+STARTS NOW() 
 DO
   DELETE FROM users
   WHERE is_guest = 1
-    AND (last_login IS NULL OR DATE(last_login) < CURDATE());
+  AND created_at < NOW() - INTERVAL 1 DAY;
 
 -- Clean up rooms and room_users older than 1 day (adjust interval as needed)
 DELIMITER //
@@ -24,5 +25,4 @@ BEGIN
 END //
 DELIMITER ;
 
-SHOW EVENTS WHERE Name = 'cleanup_old_guests';
-SHOW EVENTS WHERE Name = 'clean_old_rooms';
+SHOW EVENTS FROM funplay;
