@@ -57,6 +57,15 @@ CREATE TABLE rooms (
     FOREIGN KEY (gameID) REFERENCES games(id)
 );
 
+-- RoomUsers table
+CREATE TABLE room_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    roomID INT NOT NULL,
+    userID INT NOT NULL,
+    FOREIGN KEY (roomID) REFERENCES rooms(id),
+    FOREIGN KEY (userID) REFERENCES users(id)
+);
+
 use funplay;
 select * from gameplayed;
 select * from games;

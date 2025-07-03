@@ -158,9 +158,113 @@ def create_room():
     cursor.execute('INSERT INTO rooms (ownerUserID, gameID, pass, isfull) VALUES (%s, %s, %s, %s)', (owner_id, game['id'], roomForm['password'], 0))
     mysql.connection.commit()
     room_id = cursor.lastrowid
+    # Add owner to room_users
+    cursor.execute('INSERT INTO room_users (roomID, userID) VALUES (%s, %s)', (room_id, owner_id))
+    mysql.connection.commit()
     cursor.close()
     return jsonify({'message': 'Salle créée avec succès', 'roomId': room_id}), 201
 
+@app.route('/api/rooms', methods=['GET'])
+def get_rooms():
+    game = request.args.get('game')
+    status = request.args.get('status')
+    privacy = request.args.get('privacy')
+    cursor = mysql.connection.cursor()
+    query = '''SELECT r.id, r.ownerUserID, u.nickname as host, g.gameName as game, r.isfull, r.pass
+               FROM rooms r
+               JOIN users u ON r.ownerUserID = u.id
+               JOIN games g ON r.gameID = g.id'''
+    filters = []
+    params = []
+    if game:
+        filters.append('g.gameName=%s')
+        params.append(game)
+    if status:
+        if status == 'open':
+            filters.append('r.isfull=0')
+        elif status == 'full':
+            filters.append('r.isfull=1')
+    if privacy:
+        if privacy == 'public':
+            filters.append('(r.pass IS NULL OR r.pass = \'\')')
+        elif privacy == 'private':
+            filters.append('r.pass IS NOT NULL AND r.pass != \'\'')
+    if filters:
+        query += ' WHERE ' + ' AND '.join(filters)
+    cursor.execute(query, tuple(params))
+    rooms = cursor.fetchall()
+    # Format status and privacy
+    for r in rooms:
+        r['status'] = 'full' if r['isfull'] else 'open'
+        r['privacy'] = 'private' if r['pass'] else 'public'
+        del r['isfull']
+        del r['pass']
+    cursor.close()
+    return jsonify({'rooms': rooms}), 200
+
+@app.route('/api/join-room', methods=['POST'])
+def join_room():
+    data = request.get_json()
+    room_id = data.get('roomId')
+    password = data.get('password', '')
+    user_id = data.get('userId')
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT ownerUserID, pass, isfull FROM rooms WHERE id=%s', (room_id,))
+    room = cursor.fetchone()
+    if not room:
+        cursor.close()
+        return jsonify({'message': 'Salle introuvable'}), 404
+    if room['isfull']:
+        cursor.close()
+        return jsonify({'message': 'Salle pleine'}), 403
+    if room['ownerUserID'] == user_id:
+        cursor.close()
+        return jsonify({'message': 'Vous êtes déjà le propriétaire de cette salle'}), 400
+    if room['pass'] and room['pass'] != password:
+        cursor.close()
+        return jsonify({'message': 'Mot de passe incorrect'}), 401
+    # Add user to room_users
+    cursor.execute('INSERT INTO room_users (roomID, userID) VALUES (%s, %s)', (room_id, user_id))
+    mysql.connection.commit()
+    # Making the room full after joining
+    cursor.execute('UPDATE rooms SET isfull=1 WHERE id=%s', (room_id,))
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': 'Accès autorisé'}), 200
+
+@app.route('/api/remove-user-from-room', methods=['POST'])
+def remove_user_from_room():
+    data = request.get_json()
+    room_id = data.get('roomId')
+    user_id = data.get('userId')
+    cursor = mysql.connection.cursor()
+    # Remove user from room_users
+    cursor.execute('DELETE FROM room_users WHERE roomID=%s AND userID=%s', (room_id, user_id))
+    mysql.connection.commit()
+    # Check if only owner remains
+    cursor.execute('SELECT COUNT(*) as cnt FROM room_users WHERE roomID=%s', (room_id,))
+    count = cursor.fetchone()['cnt']
+    cursor.execute('SELECT ownerUserID FROM rooms WHERE id=%s', (room_id,))
+    owner = cursor.fetchone()['ownerUserID']
+    if count == 1:
+        # Only owner remains, set isfull to false
+        cursor.execute('UPDATE rooms SET isfull=0 WHERE id=%s', (room_id,))
+        mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': 'Utilisateur retiré de la salle'}), 200
+
+@app.route('/api/delete-room', methods=['POST'])
+def delete_room():
+    data = request.get_json()
+    room_id = data.get('roomId')
+    cursor = mysql.connection.cursor()
+    # Delete all users from room_users
+    cursor.execute('DELETE FROM room_users WHERE roomID=%s', (room_id,))
+    # Delete the room
+    cursor.execute('DELETE FROM rooms WHERE id=%s', (room_id,))
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': 'Salle supprimée'}), 200
 
 @app.errorhandler(Exception)
 def handle_exception(e):

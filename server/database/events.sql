@@ -8,5 +8,21 @@ DO
   DELETE FROM users
   WHERE is_guest = 1
     AND (last_login IS NULL OR DATE(last_login) < CURDATE());
-    
+
+-- Clean up rooms and room_users older than 1 day (adjust interval as needed)
+DELIMITER //
+CREATE EVENT IF NOT EXISTS clean_old_rooms
+ON SCHEDULE EVERY 1 DAY
+DO
+BEGIN
+    -- Delete users from room_users for old rooms
+    DELETE ru FROM room_users ru
+    JOIN rooms r ON ru.roomID = r.id
+    WHERE r.created_at < NOW() - INTERVAL 1 DAY;
+    -- Delete old rooms
+    DELETE FROM rooms WHERE created_at < NOW() - INTERVAL 1 DAY;
+END //
+DELIMITER ;
+
 SHOW EVENTS WHERE Name = 'cleanup_old_guests';
+SHOW EVENTS WHERE Name = 'clean_old_rooms';
