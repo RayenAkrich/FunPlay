@@ -11,9 +11,11 @@ DO
   AND created_at < NOW() - INTERVAL 1 DAY;
 
 -- Clean up rooms and room_users older than 1 day (adjust interval as needed)
+drop event clean_old_rooms;
 DELIMITER //
 CREATE EVENT IF NOT EXISTS clean_old_rooms
 ON SCHEDULE EVERY 1 DAY
+STARTS NOW() 
 DO
 BEGIN
     -- Delete users from room_users for old rooms

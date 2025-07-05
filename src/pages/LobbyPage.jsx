@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -17,6 +18,8 @@ const LobbyPage = () => {
   const [joinModal, setJoinModal] = useState({ open: false, roomId: null, error: '' });
   const [joinPassword, setJoinPassword] = useState('');
   const [loadingRooms, setLoadingRooms] = useState(false);
+  const [roomStats, setRoomStats] = useState({ total: 0, open: 0, mostGame: '' });
+  const [fetchError, setFetchError] = useState('');
   const games = [
     { value: '', label: 'Sélectionner un jeu' },
     { value: 'tic-tac-toe', label: 'Tic-Tac-Toe' },
@@ -24,6 +27,8 @@ const LobbyPage = () => {
     { value: 'pong', label: 'Pong' },
     // Ajoutez d'autres jeux ici
   ];
+
+  const socketRef = useRef(null);
 
   useEffect(() => {
     // Get user from localStorage
@@ -46,19 +51,53 @@ const LobbyPage = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const fetchRooms = async () => {
-      setLoadingRooms(true);
-      let url = '/api/rooms';
-      const params = [];
-      if (filters.game) params.push(`game=${encodeURIComponent(filters.game)}`);
-      if (filters.status) params.push(`status=${encodeURIComponent(filters.status)}`);
-      if (filters.privacy) params.push(`privacy=${encodeURIComponent(filters.privacy)}`);
-      if (params.length) url += '?' + params.join('&');
+    // Connect to Socket.IO server
+    if (!socketRef.current) {
+      socketRef.current = io('/', { transports: ['websocket'] });
+    }
+    const socket = socketRef.current;
+    // Listen for room updates
+    socket.on('rooms_updated', () => {
+      fetchRooms();
+    });
+    return () => {
+      socket.off('rooms_updated');
+    };
+  }, []);
+
+  // Move fetchRooms outside of useEffect so it can be called from socket event
+  const fetchRooms = async () => {
+    setLoadingRooms(true);
+    setFetchError('');
+    let url = '/api/rooms';
+    const params = [];
+    if (filters.game) params.push(`game=${encodeURIComponent(filters.game)}`);
+    if (filters.status) params.push(`status=${encodeURIComponent(filters.status)}`);
+    if (filters.privacy) params.push(`privacy=${encodeURIComponent(filters.privacy)}`);
+    if (params.length) url += '?' + params.join('&');
+    try {
       const res = await fetch(url);
+      if (!res.ok) throw new Error('Erreur lors du chargement des salles');
       const data = await res.json();
       setRooms(data.rooms || []);
-      setLoadingRooms(false);
-    };
+      // Calculate stats
+      const total = data.rooms?.length || 0;
+      const open = data.rooms?.filter(r => r.status === 'open').length || 0;
+      const gameCounts = {};
+      (data.rooms || []).forEach(r => { gameCounts[r.game] = (gameCounts[r.game] || 0) + 1; });
+      let mostGame = '';
+      let max = 0;
+      for (const g in gameCounts) { if (gameCounts[g] > max) { max = gameCounts[g]; mostGame = g; } }
+      setRoomStats({ total, open, mostGame });
+    } catch (err) {
+      setFetchError('Impossible de charger les salles. Veuillez réessayer plus tard.');
+      setRooms([]);
+      setRoomStats({ total: 0, open: 0, mostGame: '' });
+    }
+    setLoadingRooms(false);
+  };
+
+  useEffect(() => {
     fetchRooms();
   }, [filters, showCreateRoom]);
 
@@ -252,8 +291,20 @@ const LobbyPage = () => {
             <option value="private">Privée</option>
           </select>
         </div>
-        {loadingRooms ? (
-          <div className={styles.loadingRooms}>Chargement des salles...</div>
+        {/* Room stats above table */}
+        <div className={styles.roomStats}>
+          <span>Salles totales : {roomStats.total} </span>
+          <span>Ouvertes : {roomStats.open}</span>
+          {roomStats.mostGame && <span>Jeu le plus populaire : {roomStats.mostGame}</span>}
+        </div>
+        {fetchError ? (
+          <div className={styles.errorMsg}>{fetchError}</div>
+        ) : loadingRooms ? (
+          <div className={styles.skeletonTable}>
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className={styles.skeletonRow}></div>
+            ))}
+          </div>
         ) : (
           /* Room List UI */
           <table className={styles.roomTable}>
@@ -268,7 +319,14 @@ const LobbyPage = () => {
             </thead>
             <tbody>
               {rooms.length === 0 && (
-                <tr><td colSpan={5}>Aucune salle disponible</td></tr>
+                <tr>
+                  <td colSpan={5}>
+                    <div className={styles.emptyState}>
+                      <img src="/public/ghost.png" alt="Aucune salle" style={{width: '60px', opacity: 0.5}} />
+                      <div>Aucune salle ne correspond à vos filtres.<br/>Essayez d'autres critères ou créez une nouvelle salle !</div>
+                    </div>
+                  </td>
+                </tr>
               )}
               {rooms.map(room => (
                 <tr key={room.id}>

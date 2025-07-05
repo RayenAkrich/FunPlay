@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 import MySQLdb.cursors
 from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -162,6 +162,8 @@ def create_room():
     cursor.execute('INSERT INTO room_users (roomID, userID) VALUES (%s, %s)', (room_id, owner_id))
     mysql.connection.commit()
     cursor.close()
+    # Notify all clients that rooms have changed
+    socketio.emit('rooms_updated')
     return jsonify({'message': 'Salle créée avec succès', 'roomId': room_id}), 201
 
 @app.route('/api/rooms', methods=['GET'])
@@ -230,6 +232,8 @@ def join_room():
     cursor.execute('UPDATE rooms SET isfull=1 WHERE id=%s', (room_id,))
     mysql.connection.commit()
     cursor.close()
+    # Notify all clients that rooms have changed
+    socketio.emit('rooms_updated')
     return jsonify({'message': 'Accès autorisé'}), 200
 
 @app.route('/api/remove-user-from-room', methods=['POST'])
@@ -264,6 +268,8 @@ def delete_room():
     cursor.execute('DELETE FROM rooms WHERE id=%s', (room_id,))
     mysql.connection.commit()
     cursor.close()
+    # Notify all clients that rooms have changed
+    socketio.emit('rooms_updated')
     return jsonify({'message': 'Salle supprimée'}), 200
 
 @app.errorhandler(Exception)
