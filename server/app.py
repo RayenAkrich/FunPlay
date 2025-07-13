@@ -272,6 +272,26 @@ def delete_room():
     socketio.emit('rooms_updated')
     return jsonify({'message': 'Salle supprimée'}), 200
 
+@app.route('/api/leaderboard', methods=['GET'])
+def get_leaderboard():
+    game_name = request.args.get('game')
+    cursor = mysql.connection.cursor()
+    # Get game id from name
+    cursor.execute('SELECT id FROM games WHERE gameName=%s', (game_name,))
+    game = cursor.fetchone()
+    if not game:
+        cursor.close()
+        return jsonify({'leaderboard': []})
+    game_id = game['id']
+    # Get top 3 players for this game
+    cursor.execute('''SELECT l.score, u.nickname FROM leaderboard l
+                      JOIN users u ON l.idPlayer = u.id
+                      WHERE l.game_id=%s
+                      ORDER BY l.score DESC LIMIT 3''', (game_id,))
+    top_players = cursor.fetchall()
+    cursor.close()
+    return jsonify({'leaderboard': top_players})
+
 @app.errorhandler(Exception)
 def handle_exception(e):
     print('Exception:', e)

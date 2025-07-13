@@ -18,7 +18,7 @@ const Header = ({ user }) => {
             <div className={styles.profileDropdown}>
               <span className={styles.link}>{user.nickname} ▼</span>
               <div className={styles.dropdownContent}>
-                <a href="/profile" className={styles.link}><FaRegUser /> Profil</a>
+                <a href="/profile" className={styles.link}><FaRegUser /> Modifier profil</a>
                 <a href="/leaderboard" className={styles.link}><IoMdStats /> Classement</a>
                 <a href="/about" className={styles.link}><FaExclamationCircle /> À propos</a>
                 <span className={styles.link} onClick={() => { localStorage.removeItem('user'); navigate('/'); }}><IoIosExit /> Déconnexion</span>

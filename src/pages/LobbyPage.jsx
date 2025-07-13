@@ -20,12 +20,14 @@ const LobbyPage = () => {
   const [loadingRooms, setLoadingRooms] = useState(false);
   const [roomStats, setRoomStats] = useState({ total: 0, open: 0, mostGame: '' });
   const [fetchError, setFetchError] = useState('');
+  const [selectedGame, setSelectedGame] = useState('');
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
   const games = [
     { value: '', label: 'Sélectionner un jeu' },
     { value: 'tic-tac-toe', label: 'Tic-Tac-Toe' },
     { value: 'snake', label: 'Snake' },
     { value: 'pong', label: 'Pong' },
-    // Ajoutez d'autres jeux ici
   ];
 
   const socketRef = useRef(null);
@@ -180,6 +182,22 @@ const LobbyPage = () => {
     }
   };
 
+  const fetchLeaderboard = async (game) => {
+    setLoadingLeaderboard(true);
+    try {
+      const res = await fetch(`/api/leaderboard?game=${encodeURIComponent(game)}`);
+      const data = await res.json();
+      setLeaderboard(data.leaderboard || []);
+    } catch {
+      setLeaderboard([]);
+    }
+    setLoadingLeaderboard(false);
+  };
+
+  useEffect(() => {
+    if (selectedGame) fetchLeaderboard(selectedGame);
+  }, [selectedGame]);
+
   return (
     <div className={styles.lobbyContainer}>
       <Header user={user} />
@@ -293,7 +311,8 @@ const LobbyPage = () => {
         </div>
         {/* Room stats above table */}
         <div className={styles.roomStats}>
-          <span>Salles totales : {roomStats.total} </span>
+          <span>Salles totales : {roomStats.total}</span>
+          <span> | </span>
           <span>Ouvertes : {roomStats.open}</span>
           {roomStats.mostGame && <span>Jeu le plus populaire : {roomStats.mostGame}</span>}
         </div>
@@ -322,7 +341,7 @@ const LobbyPage = () => {
                 <tr>
                   <td colSpan={5}>
                     <div className={styles.emptyState}>
-                      <img src="/public/ghost.png" alt="Aucune salle" style={{width: '60px', opacity: 0.5}} />
+                      <img src="/ghost.png" alt="Aucune salle" style={{width: '60px', opacity: 0.5}} />
                       <div>Aucune salle ne correspond à vos filtres.<br/>Essayez d'autres critères ou créez une nouvelle salle !</div>
                     </div>
                   </td>
@@ -368,6 +387,44 @@ const LobbyPage = () => {
             </div>
           </div>
         )}
+        {/* Leaderboard section above room table */}
+        <div className={styles.leaderboardSection}>
+          <h2>Leaderboard</h2>
+          <select value={selectedGame} onChange={e => setSelectedGame(e.target.value)}>
+            <option value="">Choisir un jeu</option>
+            {games.filter(g => g.value).map(g => (
+              <option key={g.value} value={g.value}>{g.label}</option>
+            ))}
+          </select>
+          {loadingLeaderboard ? (
+            <div className={styles.skeletonTable}>
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className={styles.skeletonRow}></div>
+              ))}
+            </div>
+          ) : leaderboard.length > 0 ? (
+            <table className={styles.leaderboardTable}>
+              <thead>
+                <tr>
+                  <th>Rang</th>
+                  <th>Joueur</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leaderboard.map((entry, idx) => (
+                  <tr key={idx}>
+                    <td>{idx + 1}</td>
+                    <td>{entry.nickname}</td>
+                    <td>{entry.score}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : selectedGame ? (
+            <div className={styles.emptyState}>Aucun score pour ce jeu.</div>
+          ) : null}
+        </div>
         {/* Afficher la liste des rooms, bouton créer, etc. */}
       </main>
       <Footer />
