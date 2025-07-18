@@ -389,7 +389,7 @@ const LobbyPage = () => {
         )}
         {/* Leaderboard section above room table */}
         <div className={styles.leaderboardSection}>
-          <h2>Leaderboard</h2>
+          <h2>Leaderboard</h2><span>  </span>
           <select value={selectedGame} onChange={e => setSelectedGame(e.target.value)}>
             <option value="">Choisir un jeu</option>
             {games.filter(g => g.value).map(g => (
